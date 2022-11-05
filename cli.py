@@ -1,8 +1,10 @@
-#!/bin/env python
+#!/bin/env python3
 
 import sys
+from types import NoneType
 import requests
 from bs4 import BeautifulSoup
+from simple_term_menu import TerminalMenu
 
 spellcheck_url = "https://dictionary.cambridge.org/spellcheck/english/?q="
 definition_url = "https://dictionary.cambridge.org/dictionary/english/"
@@ -28,7 +30,7 @@ def get_definition(word):
 
     # If redirection detcted that means, word is not valid. So get the suggestions insetad
     if response.history and response.history[0].status_code == 302:
-        return get_suggestions(word)
+        return
 
     soup = BeautifulSoup(response.content, "html5lib")
     definitions = []
@@ -41,5 +43,19 @@ def get_definition(word):
     return definitions
 
 
-args = sys.argv[1:]
-print(get_definition(args[0]))
+def main():
+    arg = sys.argv[1:][0]
+    definition = get_definition(arg)
+
+    if definition is None:
+        suggestions = get_suggestions(arg)
+        terminal_menu = TerminalMenu(suggestions)
+        menu_entry_index = terminal_menu.show()
+        selected_suggestion = suggestions[menu_entry_index]
+
+        final_definition = get_definition(selected_suggestion)
+        print(final_definition)
+
+
+if __name__ == "__main__":
+    main()
