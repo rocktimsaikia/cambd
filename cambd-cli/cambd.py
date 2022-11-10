@@ -82,11 +82,9 @@ def main():
             definitions = get_definitions(arg)
 
     spinner.succeed(f"Showing definition for: \033[1m{arg}\033[0m")
-    print("\n" + yaml.dump(definitions, indent=3, sort_keys=False))
+
+    print("\n" + yaml.dump(definitions[0], indent=3, sort_keys=False))
 
 
-# test words: awesox
-# remove newline breaks and extra spaces from definations and examples
-#
 if __name__ == "__main__":
     main()
