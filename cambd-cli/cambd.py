@@ -5,17 +5,18 @@ import requests
 from bs4 import BeautifulSoup
 from simple_term_menu import TerminalMenu
 from halo import Halo
-import json
+import yaml
+import re
 
 spinner = Halo(text="Loading", spinner="dots")
 
 spellcheck_url = "https://dictionary.cambridge.org/spellcheck/english/?q="
 definition_url = "https://dictionary.cambridge.org/dictionary/english/"
-# This is needed to so that you dont get detected as bot
+# This is needed to not get detected as a bot
 headers = {"User-Agent": "Mozilla/5.0"}
 
 
-@Halo(text="Loading", spinner="dots")
+@spinner
 def get_suggestions(word: str) -> list[str]:
     page = requests.get(spellcheck_url + word, headers=headers)
     soup = BeautifulSoup(page.content, "html5lib")
@@ -30,7 +31,7 @@ def get_suggestions(word: str) -> list[str]:
     return suggested_words
 
 
-@Halo(text="Loading", spinner="dots")
+@spinner
 def get_definitions(word: str) -> list[str]:
     response = requests.get(definition_url + word, headers=headers)
 
@@ -50,10 +51,17 @@ def get_definitions(word: str) -> list[str]:
         for expl in example_containers:
             examples.append(expl.get_text().strip())
 
-        definition = definition.strip()[:-1].capitalize()
-        definitions.append(
-            {"type": word_type, "definition": definition, "examples": examples}
-        )
+        definition = definition.strip().capitalize()
+        last_c = definition[-1:]
+        if last_c == ":":
+            definition = definition[:-1]
+
+        definition_dict = {
+            "definition": str(re.sub("[ \n]+", " ", definition)),
+            "type": word_type,
+            "examples": examples,
+        }
+        definitions.append(definition_dict)
 
     return definitions
 
@@ -65,7 +73,7 @@ def main():
     if len(definitions) == 0:
         suggestions = get_suggestions(arg)
 
-        print(f"No definition found for: \033[1m{arg}\033[0m ❗")
+        spinner.fail(f"No definition found for: \033[1m{arg}\033[0m")
         terminal_menu = TerminalMenu(suggestions, title="Did you mean?")
         menu_entry_index = terminal_menu.show()
 
@@ -73,10 +81,12 @@ def main():
             arg = suggestions[menu_entry_index]
             definitions = get_definitions(arg)
 
-    print(f"Showig definition for: \033[1m{arg}\033[0m")
-    print(json.dumps(definitions, indent=3))
+    spinner.succeed(f"Showing definition for: \033[1m{arg}\033[0m")
+    print("\n" + yaml.dump(definitions, indent=3, sort_keys=False))
 
 
 # test words: awesox
+# remove newline breaks and extra spaces from definations and examples
+#
 if __name__ == "__main__":
     main()
