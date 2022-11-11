@@ -33,9 +33,14 @@ def get_suggestions(word: str) -> list[str]:
 
 @spinner
 def get_definitions(word: str) -> list[str]:
+    # In browser, getting definition for word with spaces inbetween automatically formats dashes (-) replacing the spaces
+    # Replicating the same behaviour here too for consistency
+    word = word.strip().replace(" ", "-")
+
     response = requests.get(definition_url + word, headers=headers)
 
-    # If redirection detcted that means, word is not valid
+    # We are considering a word to be invalid based on redirection only but that may not be the case for valids words
+    # with spcaes which we are handling it above statement
     if response.history and response.history[0].status_code == 302:
         return []
 
@@ -48,21 +53,21 @@ def get_definitions(word: str) -> list[str]:
         definition = div.find(attrs={"class": "ddef_d"}).get_text()
         example_containers = div.find_all(attrs={"class": "examp"})
         examples = []
+
         for expl in example_containers:
             examples.append(expl.get_text().strip())
 
         definition = definition.strip().capitalize()
-        last_c = definition[-1:]
-        if last_c == ":":
+        if definition.endswith(":"):
             definition = definition[:-1]
 
         if len(examples) > 2:
             examples = examples[:2]
 
         definition_dict = {
-            "definition": str(re.sub("[ \n]+", " ", definition)),
-            "type": word_type,
-            "examples": examples,
+            "Definition": str(re.sub("[ \n]+", " ", definition)) + ".",
+            "Type": word_type,
+            "Examples": examples,
         }
         definitions.append(definition_dict)
 

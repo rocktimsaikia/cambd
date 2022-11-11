@@ -56,7 +56,7 @@ sudo make uninstall
 ## TODO:
 
 - [x] Add loading animation
-- [ ] Handle error when there no definations
+- [x] Handle error for getting definition of words with spaces
 - [x] Show only 2 examples per definition by default
 - [ ] Add flag to show all definitions. Default is 1
 
