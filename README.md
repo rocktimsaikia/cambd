@@ -20,15 +20,17 @@ THAT's all!
 Make sure you have GNU `make` and `python(v3)` installed on your system.
 
 ```sh
-# Clone the repo
-git clone https://github.com/rocktimsaikia/cambd-cli.git
-cd cambd-cli
+# clone the repo
+$ git clone https://github.com/rocktimsaikia/cambd-cli.git
 
-# Install the required dependencies:
-make preinstall
+# change the working directrory to cambd-cli
+$ cd cambd-cli
 
-# Install the cambd-cli (with sudo)
-sudo make install
+# install the requirements
+$ python3 -m pip install -r requirements.txt
+
+# install cambd-cli
+$ sudo make install
 
 ```
 
@@ -39,6 +41,14 @@ cambd neccesseery
 ```
 
 > The above word spelling is incorrect. So cambd will suggest related words.
+
+## Uninstall
+
+To uninstall you can run the below command from the `cambd-cli` directory
+
+```sh
+sudo make uninstall
+```
 
 ## TODO:
 
