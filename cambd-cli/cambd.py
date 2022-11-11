@@ -1,18 +1,22 @@
 #!/bin/env python3
 
+import os
+import re
 import sys
+import yaml
+import json
 import requests
 from bs4 import BeautifulSoup
 from simple_term_menu import TerminalMenu
 from halo import Halo
-import yaml
-import re
 
 spinner = Halo(text="Loading", spinner="dots")
 
+# Don't touch this. Unless you want to deal with permission issues in other places
+cached_dictionary = os.path.expanduser("~") + "/.cambd-cache.json"
+
 spellcheck_url = "https://dictionary.cambridge.org/spellcheck/english/?q="
 definition_url = "https://dictionary.cambridge.org/dictionary/english/"
-# This is needed to not get detected as a bot
 headers = {"User-Agent": "Mozilla/5.0"}
 
 
@@ -31,11 +35,36 @@ def get_suggestions(word: str) -> list[str]:
     return suggested_words
 
 
+def is_cached(word: str):
+    # File exists and has content
+    if os.path.exists(cached_dictionary) and os.path.getsize(cached_dictionary) > 0:
+        with open(cached_dictionary, "r") as file:
+            file_data = json.load(file)
+            if word in file_data:
+                return file_data[word]
+
+
+def cache_it(word, definitions):
+    # File does not exists or file is empty;
+    if not os.path.exists(cached_dictionary) or os.path.getsize(cached_dictionary) == 0:
+        with open(cached_dictionary, "w") as ofile:
+            json.dump({word: definitions}, ofile)
+            return
+
+    # Content already exists, append
+    with open(cached_dictionary, "r+") as ofile:
+        file_data = json.load(ofile)
+        file_data[word] = definitions
+        ofile.seek(0)
+        json.dump(file_data, ofile)
+
+
 @spinner
 def get_definitions(word: str) -> list[str]:
-    # In browser, getting definition for word with spaces inbetween automatically formats dashes (-) replacing the spaces
-    # Replicating the same behaviour here too for consistency
-    word = word.strip().replace(" ", "-")
+    # Return cahced version if available
+    cached_word = is_cached(word)
+    if cached_word is not None:
+        return cached_word
 
     response = requests.get(definition_url + word, headers=headers)
 
@@ -76,7 +105,8 @@ def get_definitions(word: str) -> list[str]:
 
 def main():
     arg = sys.argv[1:][0]
-    definitions = get_definitions(arg)
+    word = arg.strip().replace(" ", "-").lower()
+    definitions = get_definitions(word)
 
     if len(definitions) == 0:
         suggestions = get_suggestions(arg)
@@ -86,12 +116,13 @@ def main():
         menu_entry_index = terminal_menu.show()
 
         if type(menu_entry_index) is int:
-            arg = suggestions[menu_entry_index]
-            definitions = get_definitions(arg)
+            suggested_word = suggestions[menu_entry_index]
+            definitions = get_definitions(suggested_word)
 
     spinner.succeed(f"Showing definition for: \033[1m{arg}\033[0m")
 
     print("\n" + yaml.dump(definitions[0], indent=3, sort_keys=False))
+    cache_it(word, definitions)
 
 
 if __name__ == "__main__":

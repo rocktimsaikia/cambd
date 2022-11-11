@@ -42,21 +42,22 @@ cambd neccesseery
 
 > The above word spelling is incorrect. So cambd will suggest related words.
 
-## Uninstall
-
-To uninstall you can run the below command from the `cambd-cli` directory
-
-```sh
-sudo make uninstall
-```
-
 ## TODO:
 
 - [x] Add loading animation
 - [x] Handle error for getting definition of words with spaces
 - [x] Show only 2 examples per definition by default
-- [ ] Implement a basic local caching mechanism
+- [x] Implement a basic local caching mechanism
 - [ ] Add flag to show all definitions. Default is 1
+
+## Caching
+
+This is how the basic caching feature is implemented
+
+- Search definition for given word in the CLI.
+- Check if the word was already looked up before in the cache file in `$HOME`.
+- If yes then return it from the cache file immediently.
+- If not fetch the new definition and add it to the cache file for future usecase.
 
 ## LICENSE
 
