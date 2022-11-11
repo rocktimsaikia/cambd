@@ -2,7 +2,10 @@
 
 > Cambridge dictionary cli app for my personal use
 
-https://user-images.githubusercontent.com/33410545/201270253-74791c96-e587-416a-989c-68bd3c09f0bc.mov
+https://user-images.githubusercontent.com/33410545/201367453-1bc9f6cf-9688-4b2c-a67b-32645272eba2.mov
+
+
+
 
 ## Why
 
