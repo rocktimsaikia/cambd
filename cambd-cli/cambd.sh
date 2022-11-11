@@ -1,2 +1,2 @@
 #!/bin/sh
-python /home/rocktim/cambd-cli/cambd-cli/cambd.py "$1"
+python /usr/local/src/cambd-cli/cambd.py "$1"
