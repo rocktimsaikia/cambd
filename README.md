@@ -54,8 +54,8 @@ sudo make uninstall
 
 - [x] Add loading animation
 - [ ] Handle error when there no definations
-- [ ] Show only 2 examples per definition by default
-- [ ] Add flag to control how many definations to show. Default is 1
+- [x] Show only 2 examples per definition by default
+- [ ] Add flag to show all definitions. Default is 1
 
 ## LICENSE
 

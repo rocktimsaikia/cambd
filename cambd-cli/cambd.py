@@ -56,6 +56,9 @@ def get_definitions(word: str) -> list[str]:
         if last_c == ":":
             definition = definition[:-1]
 
+        if len(examples) > 2:
+            examples = examples[:2]
+
         definition_dict = {
             "definition": str(re.sub("[ \n]+", " ", definition)),
             "type": word_type,
