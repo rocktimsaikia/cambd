@@ -4,9 +4,6 @@
 
 https://user-images.githubusercontent.com/33410545/201367453-1bc9f6cf-9688-4b2c-a67b-32645272eba2.mov
 
-
-
-
 ## Why
 
 This is a personal project I have been developing and using for a while. The reason is that the only dictionary I use is the [Cambridge dictionary](https://dictionary.cambridge.org/). It has very concise and very easy-to-understand definitions. And I often find myself going back to their site in search of definitions of new words I come across daily, so I made this CLI tool to automate the process.
@@ -58,6 +55,7 @@ sudo make uninstall
 - [x] Add loading animation
 - [x] Handle error for getting definition of words with spaces
 - [x] Show only 2 examples per definition by default
+- [ ] Implement a basic local caching mechanism
 - [ ] Add flag to show all definitions. Default is 1
 
 ## LICENSE
