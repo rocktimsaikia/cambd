@@ -2,8 +2,8 @@
 
 > Cambridge dictionary cli app for my personal use
 
-![screenshot-0](screenshot-0.png)
-![screenshot-1](screenshot-1.png)
+https://user-images.githubusercontent.com/33410545/201270253-74791c96-e587-416a-989c-68bd3c09f0bc.mov
+
 
 # Why
 
