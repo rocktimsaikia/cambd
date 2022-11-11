@@ -4,8 +4,7 @@
 
 https://user-images.githubusercontent.com/33410545/201270253-74791c96-e587-416a-989c-68bd3c09f0bc.mov
 
-
-# Why
+## Why
 
 This is a personal project I have been developing and using for a while. The reason is that the only dictionary I use is the [Cambridge dictionary](https://dictionary.cambridge.org/). It has very concise and very easy-to-understand definitions. And I often find myself going back to their site in search of definitions of new words I come across daily, so I made this CLI tool to automate the process.
 
@@ -16,7 +15,7 @@ I only want two things from my CLI
 
 THAT's all!
 
-# Installation
+## Installation
 
 Make sure you have GNU `make` and `python(v3)` installed on your system.
 
@@ -47,3 +46,7 @@ cambd neccesseery
 - [ ] Handle error when there no definations
 - [ ] Show only 2 examples per definition by default
 - [ ] Add flag to control how many definations to show. Default is 1
+
+## LICENSE
+
+[MIT](./LICENSE) License &copy; [Rocktim Saikia](https://rocktimsaikia.com) 2022
