@@ -121,12 +121,13 @@ def main():
         if type(menu_entry_index) is int:
             suggested_word = suggestions[menu_entry_index]
             definitions = get_definitions(suggested_word)
+            word = suggested_word
 
     if len(definitions) == 0:
         spinner.warn("No word was selected!")
         return
 
-    spinner.succeed(f"Showing definition for: \033[1m{arg}\033[0m")
+    spinner.succeed(f"Showing definition for: \033[1m{word}\033[0m")
 
     print("\n" + yaml.dump(definitions[0], indent=3, sort_keys=False))
     cache_it(word, definitions)
