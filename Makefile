@@ -1,12 +1,12 @@
-dest_dir := /usr/local/src/cambd-cli
-bin_file := /usr/bin/cambd
+DIST = /usr/local/src/cambd-cli
+BIN = /usr/bin/cambd
 
 install:
-	cp -f cambd-cli/cambd.sh $(bin_file)
-	chmod +x $(bin_file)
-	mkdir -m 777 -p $(dest_dir)
-	cp -f cambd-cli/cambd.py $(dest_dir)/cambd.py
-	@echo "\nInstall successful ✅"
+	cp -f cambd-cli/cambd.sh $(BIN)
+	chmod +x $(BIN)
+	mkdir -m 777 -p $(DIST)
+	cp -f cambd-cli/cambd.py $(DIST)
+	@echo "Install successful."
 
 uninstall:
 	rm -rf $(bin_file)
