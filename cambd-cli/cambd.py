@@ -13,16 +13,19 @@ from halo import Halo
 spinner = Halo(text="Loading", spinner="dots")
 
 # Don't touch this. Unless you want to deal with permission issues in other places
-cached_dictionary = os.path.expanduser("~") + "/.cambd-cache.json"
+CACHED_DICTIONARY = os.path.expanduser("~") + "/.cambd-cache.json"
 
-spellcheck_url = "https://dictionary.cambridge.org/spellcheck/english/?q="
-definition_url = "https://dictionary.cambridge.org/dictionary/english/"
-headers = {"User-Agent": "Mozilla/5.0"}
+SPELLCHECK_URL = "https://dictionary.cambridge.org/spellcheck/english/?q="
+DEFINITION_URL = "https://dictionary.cambridge.org/dictionary/english/"
+REQUEST_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0",
+    "Accept-Language": "en-US,en;q=0.5",
+}
 
 
 @spinner
 def get_suggestions(word: str) -> list[str]:
-    page = requests.get(spellcheck_url + word, headers=headers)
+    page = requests.get(SPELLCHECK_URL + word, headers=REQUEST_HEADERS)
     soup = BeautifulSoup(page.content, "html5lib")
     suggested_words = []
 
@@ -37,8 +40,8 @@ def get_suggestions(word: str) -> list[str]:
 
 def is_cached(word: str):
     # File exists and has content
-    if os.path.exists(cached_dictionary) and os.path.getsize(cached_dictionary) > 0:
-        with open(cached_dictionary, "r") as file:
+    if os.path.exists(CACHED_DICTIONARY) and os.path.getsize(CACHED_DICTIONARY) > 0:
+        with open(CACHED_DICTIONARY, "r") as file:
             file_data = json.load(file)
             if word in file_data:
                 return file_data[word]
@@ -46,13 +49,13 @@ def is_cached(word: str):
 
 def cache_it(word, definitions):
     # File does not exists or file is empty;
-    if not os.path.exists(cached_dictionary) or os.path.getsize(cached_dictionary) == 0:
-        with open(cached_dictionary, "w") as ofile:
+    if not os.path.exists(CACHED_DICTIONARY) or os.path.getsize(CACHED_DICTIONARY) == 0:
+        with open(CACHED_DICTIONARY, "w") as ofile:
             json.dump({word: definitions}, ofile)
             return
 
     # Content already exists, append
-    with open(cached_dictionary, "r+") as ofile:
+    with open(CACHED_DICTIONARY, "r+") as ofile:
         file_data = json.load(ofile)
         file_data[word] = definitions
         ofile.seek(0)
@@ -66,7 +69,7 @@ def get_definitions(word: str) -> list[str]:
     if cached_word is not None:
         return cached_word
 
-    response = requests.get(definition_url + word, headers=headers)
+    response = requests.get(DEFINITION_URL + word, headers=REQUEST_HEADERS)
 
     # We are considering a word to be invalid based on redirection only but that may not be the case for valids words
     # with spcaes which we are handling it above statement
