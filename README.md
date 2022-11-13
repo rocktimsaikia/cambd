@@ -51,7 +51,7 @@ cambd neccesseery
 - [x] Show only 2 examples per definition by default.
 - [x] Implement a basic local caching mechanism.
 - [x] Handle past/past-participle word definitions.
-- [ ] Use `href` to get the word definition link for less redirection issues.
+- [x] Refactor redirection for better word lookup.
 - [ ] Better/clean way to print the values in terminal.
 - [ ] Add flag to show all definitions. Default is 1.
 

@@ -73,7 +73,11 @@ def get_definitions(word: str):
 
     # We are considering a word to be invalid based on redirection only but that may not be the case for valids words
     # with spcaes which we are handling it above statement
-    if response.history and response.history[0].status_code == 302:
+    if (
+        response.history
+        and response.history[0].status_code == 302
+        and response.url == "https://dictionary.cambridge.org/dictionary/english/"
+    ):
         return []
 
     soup = BeautifulSoup(response.content, "html5lib")
