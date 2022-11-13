@@ -2,7 +2,7 @@
 
 > [Cambridge dictionary](https://dictionary.cambridge.org) cli app for personal use
 
-https://user-images.githubusercontent.com/33410545/201367453-1bc9f6cf-9688-4b2c-a67b-32645272eba2.mov
+![cambd-demo](https://user-images.githubusercontent.com/33410545/201538308-2e21a9a1-3f6e-4921-b9b8-010dca20e7bc.gif)
 
 ## Why
 
