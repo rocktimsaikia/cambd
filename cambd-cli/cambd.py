@@ -23,21 +23,6 @@ REQUEST_HEADERS = {
 }
 
 
-@spinner
-def get_suggestions(word: str) -> list[str]:
-    page = requests.get(SPELLCHECK_URL + word, headers=REQUEST_HEADERS)
-    soup = BeautifulSoup(page.content, "html5lib")
-    suggested_words = []
-
-    lis = soup.find_all(attrs={"class": "lbt"})
-    for item in lis:
-        content = item.find("a", href=True)
-        if str(content).__contains__("/search/english"):
-            suggested_words.append(content.get_text())
-
-    return suggested_words
-
-
 def is_cached(word: str):
     # File exists and has content
     if os.path.exists(CACHED_DICTIONARY) and os.path.getsize(CACHED_DICTIONARY) > 0:
@@ -63,7 +48,22 @@ def cache_it(word, definitions):
 
 
 @spinner
-def get_definitions(word: str) -> list[str]:
+def get_suggestions(word: str):
+    page = requests.get(SPELLCHECK_URL + word, headers=REQUEST_HEADERS)
+    soup = BeautifulSoup(page.content, "html5lib")
+    suggested_words = []
+
+    lis = soup.find_all(attrs={"class": "lbt"})
+    for item in lis:
+        content = item.find("a", href=True)
+        if str(content).__contains__("/search/english"):
+            suggested_words.append(content.get_text())
+
+    return suggested_words
+
+
+@spinner
+def get_definitions(word: str):
     # Return cahced version if available
     cached_word = is_cached(word)
     if cached_word is not None:
@@ -81,7 +81,15 @@ def get_definitions(word: str) -> list[str]:
 
     containers = soup.find_all(attrs={"class": "entry-body__el"})
     for div in containers:
-        word_type = div.find(attrs={"class": "dpos"}).get_text()
+        word_type = div.find(attrs={"class": "dpos"})
+        word_type = word_type.get_text() if word_type is not None else None
+
+        # no word_type means this definition is past/past-particle form of the word
+        # recurs with the original word
+        if word_type is None:
+            original_word = div.find(attrs={"class": "dx-h"}).get_text()
+            return get_definitions(original_word)
+
         definition = div.find(attrs={"class": "ddef_d"}).get_text()
         example_containers = div.find_all(attrs={"class": "examp"})
         examples = []
