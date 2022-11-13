@@ -1,6 +1,6 @@
 # cambd-cli
 
-> Cambridge dictionary cli app for my personal use
+> [Cambridge dictionary](https://dictionary.cambridge.org) cli app for personal use
 
 https://user-images.githubusercontent.com/33410545/201367453-1bc9f6cf-9688-4b2c-a67b-32645272eba2.mov
 
@@ -8,12 +8,15 @@ https://user-images.githubusercontent.com/33410545/201367453-1bc9f6cf-9688-4b2c-
 
 This is a personal project I have been developing and using for a while. The reason is that the only dictionary I use is the [Cambridge dictionary](https://dictionary.cambridge.org/). It has very concise and very easy-to-understand definitions. And I often find myself going back to their site in search of definitions of new words I come across daily, so I made this CLI tool to automate the process.
 
-I only want two things from my CLI
+## Features
 
-1. I always spell words wrong while typing. In that case suggest me the correct word or related words.
-2. If the provided word is spelled correctly then give the defination with minimum examples.
+- Autosuggest related words if I mistyped the word when looking it up.
+- Interactive suggestion menu to select words from in the above case.
+- Handles past and past-particle words. Returns the original word definition.
+- No API/database involved.
+- Caching mechanism; so that already looked up words does not gets fetched again. Hence fast results.
 
-THAT's all!
+> By default it caches the words in `$HOME/.cambd-cache.json`. To clear the cache if needed <br/> run `cambd --clear-cache`. It is strongly recommended to not modify this file manually.
 
 ## Installation
 
@@ -31,7 +34,6 @@ $ python3 -m pip install -r requirements.txt
 
 # install cambd-cli
 $ sudo make install
-
 ```
 
 Then you can use it like this:
@@ -44,20 +46,14 @@ cambd neccesseery
 
 ## TODO:
 
-- [x] Add loading animation
-- [x] Handle error for getting definition of words with spaces
-- [x] Show only 2 examples per definition by default
-- [x] Implement a basic local caching mechanism
-- [ ] Add flag to show all definitions. Default is 1
-
-## Caching
-
-This is how the basic caching feature is implemented
-
-- Search definition for given word in the CLI.
-- Check if the word was already looked up before in the cache file in `$HOME`.
-- If yes then return it from the cache file immediently.
-- If not fetch the new definition and add it to the cache file for future usecase.
+- [x] Add loading animation.
+- [x] Handle error for getting definition of words with spaces.
+- [x] Show only 2 examples per definition by default.
+- [x] Implement a basic local caching mechanism.
+- [x] Handle past/past-participle word definitions.
+- [ ] Use `href` to get the word definition link for less redirection issues.
+- [ ] Better/clean way to print the values in terminal.
+- [ ] Add flag to show all definitions. Default is 1.
 
 ## LICENSE
 
