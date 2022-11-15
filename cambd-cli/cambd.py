@@ -3,12 +3,12 @@
 import os
 import re
 import sys
-import yaml
 import json
 import requests
 from bs4 import BeautifulSoup
 from simple_term_menu import TerminalMenu
 from halo import Halo
+from rich import print
 
 spinner = Halo(text="Loading", spinner="dots")
 
@@ -62,6 +62,10 @@ def get_suggestions(word: str):
     return suggested_words
 
 
+def decode_escaped_chars(strg):
+    return strg.encode("utf8").decode("utf8", "strict")
+
+
 @spinner
 def get_definitions(word: str):
     # Return cahced version if available
@@ -99,17 +103,19 @@ def get_definitions(word: str):
         examples = []
 
         for expl in example_containers:
-            examples.append(expl.get_text().strip())
+            example_text = expl.get_text().strip()
+            example_text = decode_escaped_chars(example_text)
+            examples.append(example_text)
 
         definition = definition.strip().capitalize()
-        if definition.endswith(":"):
-            definition = definition[:-1]
+        definition = definition[:-1] if definition.endswith(":") else definition
+        definition = str(re.sub("[ \n]+", " ", definition)) + "."
 
         if len(examples) > 2:
             examples = examples[:2]
 
         definition_dict = {
-            "Definition": str(re.sub("[ \n]+", " ", definition)) + ".",
+            "Definition": definition,
             "Type": word_type,
             "Examples": examples,
         }
@@ -139,9 +145,17 @@ def main():
         spinner.warn("No word was selected!")
         return
 
-    spinner.succeed(f"Showing definition for: \033[1m{word}\033[0m")
+    # Only show this when the the word was selected from suggestion menu
+    spinner.succeed(f"Showing definition of \033[1m{word}\033[0m instead")
 
-    print("\n" + yaml.dump(definitions[0], indent=3, sort_keys=False))
+    print(f"\n[bold green]{word}[/] [dim]({definitions[0]['Type']})[/]")
+    print(definitions[0]["Definition"])
+    print("\n[dim]Examples:[/]")
+    for i in range(len(definitions[0]["Examples"])):
+        example = f"• {definitions[0]['Examples'][i]}"
+        print(example)
+    print("\n")
+
     cache_it(word, definitions)
 
 

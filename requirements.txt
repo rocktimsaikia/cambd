@@ -1,5 +1,5 @@
 beautifulsoup4==4.11.1
 halo==0.0.31
-PyYAML==6.0
 requests==2.25.1
+rich==12.6.0
 simple_term_menu==1.5.2
