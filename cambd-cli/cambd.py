@@ -128,6 +128,7 @@ def main():
     arg = sys.argv[1:][0]
     word = arg.strip().replace(" ", "-").lower()
     definitions = get_definitions(word)
+    is_from_suggestions = False
 
     if len(definitions) == 0:
         suggestions = get_suggestions(arg)
@@ -140,13 +141,15 @@ def main():
             suggested_word = suggestions[menu_entry_index]
             definitions = get_definitions(suggested_word)
             word = suggested_word
+            is_from_suggestions = True
 
     if len(definitions) == 0:
         spinner.warn("No word was selected!")
         return
 
     # Only show this when the the word was selected from suggestion menu
-    spinner.succeed(f"Showing definition of \033[1m{word}\033[0m instead")
+    if is_from_suggestions:
+        spinner.succeed(f"Showing definition of \033[1m{word}\033[0m instead")
 
     print(f"\n[bold green]{word}[/] [dim]({definitions[0]['Type']})[/]")
     print(definitions[0]["Definition"])
