@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 help() {
- echo "A commandline dictionary tool"
+ echo "Cambridge dictionary cli app"
  echo
  echo "Usage:"
  echo "$ cambd <word>"
