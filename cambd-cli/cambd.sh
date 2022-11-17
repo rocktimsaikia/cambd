@@ -1,7 +1,26 @@
-#!/bin/sh
+#!/usr/bin/bash
+
+help() {
+ echo "A commandline dictionary tool"
+ echo
+ echo "Usage:"
+ echo "$ cambd <word>"
+ echo
+ echo "Options:"
+ echo "--clean-cache	Clean the local cache."
+ echo "--help		Print this help."
+ echo
+ echo "Examples:"
+ echo "$ cambd neccessery"
+ echo
+}
+
 if [ "$1" = "--clean-cache" ]; then
   echo {} > ~/.cambd-cache.json
   exit
+elif [ "$1" = "" ] || [ "$1" = "--help" ]; then
+  help
+  exit
 fi
 
-python /usr/local/src/cambd-cli/cambd.py "$1"
+python3 /usr/local/src/cambd-cli/cambd.py "$1"

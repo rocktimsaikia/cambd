@@ -4,7 +4,6 @@
 
 ![cambd demo gif](https://user-images.githubusercontent.com/33410545/202222930-81d79a3c-32b5-4d4a-a999-4dcb8b4fbcfc.gif)
 
-
 ## Why
 
 This is a personal project I have been developing and using for a while. The reason is that the only dictionary I use is the [Cambridge dictionary](https://dictionary.cambridge.org/). It has very concise and very easy-to-understand definitions. And I often find myself going back to their site in search of definitions of new words I come across daily, so I made this CLI tool to automate the process.
@@ -16,8 +15,6 @@ This is a personal project I have been developing and using for a while. The rea
 - Handles past and past-particle words. Returns the original word definition.
 - No API/database involved.
 - Caching mechanism; so that already looked up words does not gets fetched again. Hence fast results.
-
-> By default it caches the words in `$HOME/.cambd-cache.json`. To clear the cache if needed <br/> run `cambd --clear-cache`. It is strongly recommended to not modify this file manually.
 
 ## Installation
 
@@ -37,15 +34,27 @@ $ python3 -m pip install -r requirements.txt
 $ sudo make install
 ```
 
-Then you can use it like this:
+## Usage
+
+run `cambd --help`
 
 ```sh
-cambd neccesseery
+Cambridge dictionary cli app
+
+Usage:
+$ cambd <word>
+
+Options:
+--clean-cache	Clean the local cache.
+--help		Print this help.
+
+Examples:
+$ cambd neccessery
 ```
 
-> The above word spelling is incorrect. So cambd will suggest related words.
+> By default it caches the words in `$HOME/.cambd-cache.json`. To clear the cache if needed <br/> run `cambd --clear-cache`. It is strongly recommended to not modify this file manually.
 
-## TODO:
+## TODO
 
 - [x] Add loading animation.
 - [x] Handle error for getting definition of words with spaces.
@@ -53,7 +62,7 @@ cambd neccesseery
 - [x] Implement a basic local caching mechanism.
 - [x] Handle past/past-participle word definitions.
 - [x] Refactor redirection for better word lookup.
-- [ ] Better/clean way to print the values in terminal.
+- [x] Better/clean way to print the values in terminal.
 - [ ] Add flag to show all definitions. Default is 1.
 
 ## LICENSE
