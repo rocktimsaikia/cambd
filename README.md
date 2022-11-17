@@ -6,7 +6,7 @@
 
 ## Why
 
-This is a personal project I have been developing and using for a while. The reason is that the only dictionary I use is the [Cambridge dictionary](https://dictionary.cambridge.org/). It has very concise and very easy-to-understand definitions. And I often find myself going back to their site in search of definitions of new words I come across daily, so I made this CLI tool to automate the process.
+This is a personal project I have been developing and using for a while. Since English is not my first language. I often had to search the meanings of new words I encounter in podcasts or movies. Personally the only dictionary I use is the [Cambridge dictionary](https://dictionary.cambridge.org/). It has very concise and very easy-to-understand definitions. And I often find myself going back to their site, so I made this CLI tool to automate the process.
 
 ## Features
 
