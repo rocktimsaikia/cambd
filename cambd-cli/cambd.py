@@ -57,7 +57,7 @@ def decode_escaped_chars(strg):
 
 
 @spinner
-def get_definitions(db: sqlite3.Connection, word: str):
+def get_definitions(word: str):
     # Return cahced version if available
     cached_word = is_cached(word)
     if cached_word is not None:
@@ -86,7 +86,7 @@ def get_definitions(db: sqlite3.Connection, word: str):
         # recurs with the original word
         if word_type is None:
             original_word = div.find(attrs={"class": "dx-h"}).get_text()
-            return get_definitions(db, original_word)
+            return get_definitions(original_word)
 
         definition = div.find(attrs={"class": "ddef_d"}).get_text()
         example_containers = div.find_all(attrs={"class": "examp"})
@@ -122,7 +122,7 @@ def main():
     definitions TEXT
     ); """
     db.execute(table)
-    definitions = get_definitions(db, word)
+    definitions = get_definitions(word)
     is_from_suggestions = False
 
     if len(definitions) == 0:
@@ -134,7 +134,7 @@ def main():
 
         if type(menu_entry_index) is int:
             suggested_word = suggestions[menu_entry_index]
-            definitions = get_definitions(db, suggested_word)
+            definitions = get_definitions(suggested_word)
             word = suggested_word
             is_from_suggestions = True
 
