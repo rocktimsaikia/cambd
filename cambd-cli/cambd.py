@@ -14,8 +14,8 @@ import sqlite3
 spinner = Halo(text="Loading", spinner="dots")
 
 # Don't touch this. Unless you want to deal with permission issues in other places
-CACHED_DATABASE = os.path.expanduser("~") + "/.cambd-cache"
-db = sqlite3.connect(CACHED_DATABASE)
+CACHED_DATABASE = os.path.expanduser("~") + "/.cambd-cache.db"
+db_connection = sqlite3.connect(CACHED_DATABASE)
 
 SPELLCHECK_URL = "https://dictionary.cambridge.org/spellcheck/english/?q="
 DEFINITION_URL = "https://dictionary.cambridge.org/dictionary/english/"
@@ -26,15 +26,17 @@ REQUEST_HEADERS = {
 
 
 def is_cached(word: str):
-    curs = db.execute("SELECT definitions FROM words WHERE word = ?", (word,))
-    row = curs.fetchone()
+    cursor = db_connection.execute(
+        "SELECT definitions FROM words WHERE word = ?", (word,)
+    )
+    row = cursor.fetchone()
     return json.loads(row[0]) if row else None
 
 
 def cache_it(word, definitions):
     row = word, json.dumps(definitions)
-    with db:
-        db.execute("INSERT OR REPLACE INTO words VALUES (?, ?)", row)
+    with db_connection:
+        db_connection.execute("INSERT OR REPLACE INTO words VALUES (?, ?)", row)
 
 
 @spinner
@@ -121,7 +123,7 @@ def main():
     word PRIMARY KEY,
     definitions TEXT
     ); """
-    db.execute(table)
+    db_connection.execute(table)
     definitions = get_definitions(word)
     is_from_suggestions = False
 
