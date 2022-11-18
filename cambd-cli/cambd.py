@@ -9,11 +9,13 @@ from bs4 import BeautifulSoup
 from simple_term_menu import TerminalMenu
 from halo import Halo
 from rich import print
+import sqlite3
 
 spinner = Halo(text="Loading", spinner="dots")
 
 # Don't touch this. Unless you want to deal with permission issues in other places
-CACHED_DICTIONARY = os.path.expanduser("~") + "/.cambd-cache.json"
+CACHED_DATABASE = os.path.expanduser("~") + "/.cambd-cache"
+db = sqlite3.connect(CACHED_DATABASE)
 
 SPELLCHECK_URL = "https://dictionary.cambridge.org/spellcheck/english/?q="
 DEFINITION_URL = "https://dictionary.cambridge.org/dictionary/english/"
@@ -24,27 +26,15 @@ REQUEST_HEADERS = {
 
 
 def is_cached(word: str):
-    # File exists and has content
-    if os.path.exists(CACHED_DICTIONARY) and os.path.getsize(CACHED_DICTIONARY) > 0:
-        with open(CACHED_DICTIONARY, "r") as file:
-            file_data = json.load(file)
-            if word in file_data:
-                return file_data[word]
+    curs = db.execute("SELECT definitions FROM words WHERE word = ?", (word,))
+    row = curs.fetchone()
+    return json.loads(row[0]) if row else None
 
 
 def cache_it(word, definitions):
-    # File does not exists or file is empty;
-    if not os.path.exists(CACHED_DICTIONARY) or os.path.getsize(CACHED_DICTIONARY) == 0:
-        with open(CACHED_DICTIONARY, "w") as ofile:
-            json.dump({word: definitions}, ofile)
-            return
-
-    # Content already exists, append
-    with open(CACHED_DICTIONARY, "r+") as ofile:
-        file_data = json.load(ofile)
-        file_data[word] = definitions
-        ofile.seek(0)
-        json.dump(file_data, ofile)
+    row = word, json.dumps(definitions)
+    with db:
+        db.execute("INSERT OR REPLACE INTO words VALUES (?, ?)", row)
 
 
 @spinner
@@ -67,7 +57,7 @@ def decode_escaped_chars(strg):
 
 
 @spinner
-def get_definitions(word: str):
+def get_definitions(db: sqlite3.Connection, word: str):
     # Return cahced version if available
     cached_word = is_cached(word)
     if cached_word is not None:
@@ -96,7 +86,7 @@ def get_definitions(word: str):
         # recurs with the original word
         if word_type is None:
             original_word = div.find(attrs={"class": "dx-h"}).get_text()
-            return get_definitions(original_word)
+            return get_definitions(db, original_word)
 
         definition = div.find(attrs={"class": "ddef_d"}).get_text()
         example_containers = div.find_all(attrs={"class": "examp"})
@@ -127,7 +117,12 @@ def get_definitions(word: str):
 def main():
     arg = sys.argv[1:][0]
     word = arg.strip().replace(" ", "-").lower()
-    definitions = get_definitions(word)
+    table = """ CREATE TABLE IF NOT EXISTS words (
+    word PRIMARY KEY,
+    definitions TEXT
+    ); """
+    db.execute(table)
+    definitions = get_definitions(db, word)
     is_from_suggestions = False
 
     if len(definitions) == 0:
@@ -139,7 +134,7 @@ def main():
 
         if type(menu_entry_index) is int:
             suggested_word = suggestions[menu_entry_index]
-            definitions = get_definitions(suggested_word)
+            definitions = get_definitions(db, suggested_word)
             word = suggested_word
             is_from_suggestions = True
 

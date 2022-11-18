@@ -16,7 +16,7 @@ help() {
 }
 
 if [ "$1" = "--clean-cache" ]; then
-  echo {} > ~/.cambd-cache.json
+  rm -f ~/.cambd-cache
   exit
 elif [ "$1" = "" ] || [ "$1" = "--help" ]; then
   help
