@@ -9,11 +9,13 @@ from bs4 import BeautifulSoup
 from simple_term_menu import TerminalMenu
 from halo import Halo
 from rich import print
+import sqlite3
 
 spinner = Halo(text="Loading", spinner="dots")
 
 # Don't touch this. Unless you want to deal with permission issues in other places
-CACHED_DICTIONARY = os.path.expanduser("~") + "/.cambd-cache.json"
+CACHED_DATABASE = os.path.expanduser("~") + "/.cambd-cache.db"
+con = sqlite3.connect(CACHED_DATABASE)
 
 SPELLCHECK_URL = "https://dictionary.cambridge.org/spellcheck/english/?q="
 DEFINITION_URL = "https://dictionary.cambridge.org/dictionary/english/"
@@ -24,27 +26,15 @@ REQUEST_HEADERS = {
 
 
 def is_cached(word: str):
-    # File exists and has content
-    if os.path.exists(CACHED_DICTIONARY) and os.path.getsize(CACHED_DICTIONARY) > 0:
-        with open(CACHED_DICTIONARY, "r") as file:
-            file_data = json.load(file)
-            if word in file_data:
-                return file_data[word]
+    cur = con.execute("SELECT definitions FROM words WHERE word = ?", (word,))
+    row = cur.fetchone()
+    return json.loads(row[0]) if row else None
 
 
-def cache_it(word, definitions):
-    # File does not exists or file is empty;
-    if not os.path.exists(CACHED_DICTIONARY) or os.path.getsize(CACHED_DICTIONARY) == 0:
-        with open(CACHED_DICTIONARY, "w") as ofile:
-            json.dump({word: definitions}, ofile)
-            return
-
-    # Content already exists, append
-    with open(CACHED_DICTIONARY, "r+") as ofile:
-        file_data = json.load(ofile)
-        file_data[word] = definitions
-        ofile.seek(0)
-        json.dump(file_data, ofile)
+def cache_it(word: str, definitions):
+    row = word, json.dumps(definitions)
+    with con:
+        con.execute("INSERT OR REPLACE INTO words VALUES (?, ?)", row)
 
 
 @spinner
@@ -127,6 +117,13 @@ def get_definitions(word: str):
 def main():
     arg = sys.argv[1:][0]
     word = arg.strip().replace(" ", "-").lower()
+
+    table = """ CREATE TABLE IF NOT EXISTS words (
+    word PRIMARY KEY,
+    definitions TEXT
+    ); """
+    con.execute(table)
+
     definitions = get_definitions(word)
     is_from_suggestions = False
 

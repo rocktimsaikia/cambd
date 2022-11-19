@@ -16,6 +16,8 @@ This is a personal project I have been developing and using for a while. Since E
 - No API/database involved.
 - Caching mechanism; so that already looked up words does not gets fetched again. Hence fast results.
 
+> Uses python's integreted `sqlite3` for maintaning a locale cache
+
 ## Installation
 
 Make sure you have GNU `make` and `python(v3)` installed on your system.
@@ -52,7 +54,7 @@ Examples:
 $ cambd neccessery
 ```
 
-> By default it caches the words in `$HOME/.cambd-cache.json`. To clear the cache if needed <br/> run `cambd --clear-cache`. It is strongly recommended to not modify this file manually.
+> By default it caches words in `$HOME/.cambd-cache.db`. To clear the cache if needed <br/> run `cambd --clear-cache`. It is strongly recommended to not modify this file manually.
 
 ## TODO
 
