@@ -65,7 +65,10 @@ $ cambd neccessery
 - [x] Handle past/past-participle word definitions.
 - [x] Refactor redirection for better word lookup.
 - [x] Better/clean way to print the values in terminal.
+- [ ] Move the bash port to python too.
+- [ ] Create a pypi package out of it.
 - [ ] Add flag to show all definitions. Default is 1.
+- [ ] Show synonyms for the searched word too.
 
 ## LICENSE
 
