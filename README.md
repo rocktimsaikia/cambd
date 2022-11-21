@@ -68,7 +68,7 @@ $ cambd neccessery
 - [x] Better/clean way to print the values in terminal.
 - [ ] Move the bash port to python too.
 - [ ] Create a pypi package out of it.
-- [ ] Add flag to show all definitions. Default is 1.
+- [x] Add flag to show all definitions. Default is 1.
 - [ ] Show synonyms for the searched word too.
 
 ## LICENSE
