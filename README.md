@@ -47,6 +47,7 @@ Usage:
 $ cambd <word>
 
 Options:
+--show-all	Show all the available definitions of a word. (default is only 1 definition)
 --clean-cache	Clean the local cache.
 --help		Print this help.
 

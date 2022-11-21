@@ -7,6 +7,7 @@ help() {
  echo "$ cambd <word>"
  echo
  echo "Options:"
+ echo "--show-all	Show all the available definitions of a word. (default is only 1 definition)"
  echo "--clean-cache	Clean the local cache."
  echo "--help		Print this help."
  echo
