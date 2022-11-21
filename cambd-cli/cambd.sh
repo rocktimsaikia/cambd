@@ -24,4 +24,4 @@ elif [ "$1" = "" ] || [ "$1" = "--help" ]; then
   exit
 fi
 
-python3 /usr/local/src/cambd-cli/cambd.py "$1"
+python3 /usr/local/src/cambd-cli/cambd.py "$1" "$2"
