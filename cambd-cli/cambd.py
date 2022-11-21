@@ -114,30 +114,48 @@ def get_definitions(word: str):
     return definitions
 
 
-def main():
-    arg = sys.argv[1:][0]
-    word = arg.strip().replace(" ", "-").lower()
+def print_definition(word, definition, is_last):
+    print(f"\n[bold green]{word}[/] [dim]({definition['Type']})[/]")
+    print(definition["Definition"])
+    print("\n[dim]Examples:[/]")
+    for example in definition["Examples"]:
+        print(f"• {example}")
+    print("\n=====*=====") if not is_last else print("\n")
 
+
+def main():
+    args = sys.argv[1:]
+    searced_word = args[0]
+
+    # handle options
+    options = {"show_all": False}
+    if len(args) > 1:
+        if args[1] == "--show-all":
+            options["show_all"] = True
+
+    searched_word_filtered = searced_word.strip().replace(" ", "-").lower()
+
+    # handle db creation
     table = """ CREATE TABLE IF NOT EXISTS words (
     word PRIMARY KEY,
     definitions TEXT
     ); """
     con.execute(table)
 
-    definitions = get_definitions(word)
+    definitions = get_definitions(searched_word_filtered)
     is_from_suggestions = False
 
     if len(definitions) == 0:
-        suggestions = get_suggestions(arg)
+        suggestions = get_suggestions(searched_word_filtered)
 
-        spinner.fail(f"No definition found for: \033[1m{arg}\033[0m")
+        spinner.fail(f"No definition found for: \033[1m{searced_word}\033[0m")
         terminal_menu = TerminalMenu(suggestions, title="Did you mean?")
         menu_entry_index = terminal_menu.show()
 
         if type(menu_entry_index) is int:
             suggested_word = suggestions[menu_entry_index]
             definitions = get_definitions(suggested_word)
-            word = suggested_word
+            searched_word_filtered = suggested_word
             is_from_suggestions = True
 
     if len(definitions) == 0:
@@ -146,17 +164,18 @@ def main():
 
     # Only show this when the the word was selected from suggestion menu
     if is_from_suggestions:
-        spinner.succeed(f"Showing definition of \033[1m{word}\033[0m instead")
+        spinner.succeed(
+            f"Showing definition of \033[1m{searched_word_filtered}\033[0m instead"
+        )
 
-    print(f"\n[bold green]{word}[/] [dim]({definitions[0]['Type']})[/]")
-    print(definitions[0]["Definition"])
-    print("\n[dim]Examples:[/]")
-    for i in range(len(definitions[0]["Examples"])):
-        example = f"• {definitions[0]['Examples'][i]}"
-        print(example)
-    print("\n")
+    for i in range(len(definitions)):
+        if not options["show_all"]:
+            print_definition(searched_word_filtered, definitions[0], True)
+            break
+        is_last = (i + 1) == len(definitions)
+        print_definition(searched_word_filtered, definitions[i], is_last)
 
-    cache_it(word, definitions)
+    cache_it(searched_word_filtered, definitions)
 
 
 if __name__ == "__main__":

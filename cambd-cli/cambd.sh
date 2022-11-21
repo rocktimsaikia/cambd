@@ -7,6 +7,7 @@ help() {
  echo "$ cambd <word>"
  echo
  echo "Options:"
+ echo "--show-all	Show all the available definitions of a word. (default is only 1 definition)"
  echo "--clean-cache	Clean the local cache."
  echo "--help		Print this help."
  echo
@@ -23,4 +24,4 @@ elif [ "$1" = "" ] || [ "$1" = "--help" ]; then
   exit
 fi
 
-python3 /usr/local/src/cambd-cli/cambd.py "$1"
+python3 /usr/local/src/cambd-cli/cambd.py "$1" "$2"
