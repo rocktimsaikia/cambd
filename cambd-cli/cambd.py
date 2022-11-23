@@ -1,21 +1,16 @@
 #!/usr/bin/env python3
 
-import os
 import re
-import json
 import requests
 from bs4 import BeautifulSoup
 from simple_term_menu import TerminalMenu
 from halo import Halo
 from rich import print
-import sqlite3
 import click
+import utils
 
 spinner = Halo(text="Loading", spinner="dots")
 
-# Don't touch this. Unless you want to deal with permission issues in other places
-CACHED_DATABASE = os.path.expanduser("~") + "/.cambd-cache.db"
-con = sqlite3.connect(CACHED_DATABASE)
 
 SPELLCHECK_URL = "https://dictionary.cambridge.org/spellcheck/english/?q="
 DEFINITION_URL = "https://dictionary.cambridge.org/dictionary/english/"
@@ -23,18 +18,6 @@ REQUEST_HEADERS = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0",
     "Accept-Language": "en-US,en;q=0.5",
 }
-
-
-def is_cached(word: str):
-    cur = con.execute("SELECT definitions FROM words WHERE word = ?", (word,))
-    row = cur.fetchone()
-    return json.loads(row[0]) if row else None
-
-
-def cache_it(word: str, definitions):
-    row = word, json.dumps(definitions)
-    with con:
-        con.execute("INSERT OR REPLACE INTO words VALUES (?, ?)", row)
 
 
 @spinner
@@ -59,7 +42,7 @@ def decode_escaped_chars(strg):
 @spinner
 def get_definitions(word: str):
     # Return cahced version if available
-    cached_word = is_cached(word)
+    cached_word = utils.is_cached(word)
     if cached_word is not None:
         return cached_word
 
@@ -123,10 +106,10 @@ def print_definition(word, definition, is_last):
     print("\n=====*=====") if not is_last else print("\n")
 
 
-def clear_cache(ctx, param, value):
+def handle_clear_cache(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
-    con.execute(""" DROP TABLE IF EXISTS words """)
+    utils.cache_clear()
     print("Cleared all the cambd word cache.")
     ctx.exit()
 
@@ -144,7 +127,7 @@ def clear_cache(ctx, param, value):
     "-c",
     "--clean-cache",
     is_flag=True,
-    callback=clear_cache,
+    callback=handle_clear_cache,
     expose_value=False,
     is_eager=True,
     help="Clear all the stored cache from system.",
@@ -152,12 +135,7 @@ def clear_cache(ctx, param, value):
 def main(word: str, show_all: bool):
     """Cambridge dictionary CLI app"""
 
-    # Handle db creation
-    sql_create_query = """ CREATE TABLE IF NOT EXISTS words (
-    word PRIMARY KEY,
-    definitions TEXT
-    ); """
-    con.execute(sql_create_query)
+    utils.cache_create()
 
     # Main
     word_filtered = word.strip().replace(" ", "-").lower()
@@ -192,7 +170,7 @@ def main(word: str, show_all: bool):
             is_last = (i + 1) == len(definitions)
             print_definition(word_filtered, definitions[i], is_last)
 
-    cache_it(word_filtered, definitions)
+    utils.cache_append(word_filtered, definitions)
 
 
 if __name__ == "__main__":
