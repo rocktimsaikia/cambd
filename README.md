@@ -2,7 +2,7 @@
 
 > [Cambridge dictionary](https://dictionary.cambridge.org) cli app for personal use
 
-![cambd demo gif](https://user-images.githubusercontent.com/33410545/202222930-81d79a3c-32b5-4d4a-a999-4dcb8b4fbcfc.gif)
+![cambd demo gif](demo.gif)
 
 ## Why
 
@@ -16,7 +16,7 @@ This is a personal project I have been developing and using for a while. Since E
 - No API/database involved.
 - Caching mechanism; so that already looked up words does not gets fetched again. Hence fast results.
 
-> Uses python's integreted `sqlite3` for maintaning a locale cache
+> Uses python's integreted `sqlite3` for maintaning a persistent cache
 
 ## Installation
 
@@ -41,18 +41,14 @@ $ sudo make install
 run `cambd --help`
 
 ```sh
-Cambridge dictionary cli app
+Usage: cambd [OPTIONS] WORD
 
-Usage:
-$ cambd <word>
+  Cambridge dictionary CLI app
 
 Options:
---show-all	Show all the available definitions of a word. (default is only 1 definition)
---clean-cache	Clean the local cache.
---help		Print this help.
-
-Examples:
-$ cambd neccessery
+  -a, --show-all     Show all the definitions of a word.
+  -c, --clean-cache  Clear all the stored cache from system.
+  --help             Show this message and exit.
 ```
 
 > By default it caches words in `$HOME/.cambd-cache.db`. To clear the cache if needed <br/> run `cambd --clear-cache`. It is strongly recommended to not modify this file manually.
@@ -66,7 +62,7 @@ $ cambd neccessery
 - [x] Handle past/past-participle word definitions.
 - [x] Refactor redirection for better word lookup.
 - [x] Better/clean way to print the values in terminal.
-- [ ] Move the bash port to python too.
+- [x] Move the bash port to python too.
 - [ ] Create a pypi package out of it.
 - [x] Add flag to show all definitions. Default is 1.
 - [ ] Show synonyms for the searched word too.
