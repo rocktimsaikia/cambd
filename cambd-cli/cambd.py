@@ -7,7 +7,7 @@ from simple_term_menu import TerminalMenu
 from halo import Halo
 from rich import print
 import click
-import utils
+import cache
 
 spinner = Halo(text="Loading", spinner="dots")
 
@@ -42,7 +42,7 @@ def decode_escaped_chars(strg):
 @spinner
 def get_definitions(word: str):
     # Return cahced version if available
-    cached_word = utils.is_cached(word)
+    cached_word = cache.is_cached(word)
     if cached_word is not None:
         return cached_word
 
@@ -109,7 +109,7 @@ def print_definition(word, definition, is_last):
 def handle_clear_cache(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
-    utils.cache_clear()
+    cache.cache_clear()
     print("Cleared all the cambd word cache.")
     ctx.exit()
 
@@ -135,7 +135,7 @@ def handle_clear_cache(ctx, param, value):
 def main(word: str, show_all: bool):
     """Cambridge dictionary CLI app"""
 
-    utils.cache_create()
+    cache.cache_create()
 
     # Main
     word_filtered = word.strip().replace(" ", "-").lower()
@@ -170,7 +170,7 @@ def main(word: str, show_all: bool):
             is_last = (i + 1) == len(definitions)
             print_definition(word_filtered, definitions[i], is_last)
 
-    utils.cache_append(word_filtered, definitions)
+    cache.cache_append(word_filtered, definitions)
 
 
 if __name__ == "__main__":
