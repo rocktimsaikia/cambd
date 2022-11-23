@@ -1,5 +1,6 @@
 beautifulsoup4==4.11.1
 html5lib==1.1.0
+click==8.0.3
 halo==0.0.31
 requests==2.25.1
 rich==12.6.0
