@@ -7,7 +7,7 @@ from halo import Halo
 from simple_term_menu import TerminalMenu
 
 from cambd import cache
-from cambd import dict
+from cambd import dictionary
 
 spinner = Halo(text="Loading", spinner="dots")
 
@@ -54,11 +54,11 @@ def main(word: str, show_all: bool):
 
     # Main
     word_filtered = word.strip().replace(" ", "-").lower()
-    definitions = dict.get_definitions(word_filtered)
+    definitions = dictionary.get_definitions(word_filtered)
     is_from_suggestions = False
 
     if len(definitions) == 0:
-        suggestions = dict.get_suggestions(word_filtered)
+        suggestions = dictionary.get_suggestions(word_filtered)
 
         spinner.fail(f"No definition found for: \033[1m{word}\033[0m")
         terminal_menu = TerminalMenu(suggestions, title="Did you mean?")
@@ -66,7 +66,7 @@ def main(word: str, show_all: bool):
 
         if type(menu_entry_index) is int:
             suggested_word = suggestions[menu_entry_index]
-            definitions = dict.get_definitions(suggested_word)
+            definitions = dictionary.get_definitions(suggested_word)
             word_filtered = suggested_word
             is_from_suggestions = True
 
