@@ -2,7 +2,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from halo import Halo
-import cache
+from cambd import cache
 
 spinner = Halo(text="Loading", spinner="dots")
 

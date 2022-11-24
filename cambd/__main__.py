@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
-from simple_term_menu import TerminalMenu
+import click
 from halo import Halo
 from rich import print
 from halo import Halo
-import click
-import cache
-import dictionary
+from simple_term_menu import TerminalMenu
+
+from cambd import cache
+from cambd import dict
 
 spinner = Halo(text="Loading", spinner="dots")
 
@@ -46,18 +47,18 @@ def handle_clear_cache(ctx, param, value):
     is_eager=True,
     help="Clear all the stored cache from system.",
 )
-def cli(word: str, show_all: bool):
+def main(word: str, show_all: bool):
     """Cambridge dictionary CLI app"""
 
     cache.cache_create()
 
     # Main
     word_filtered = word.strip().replace(" ", "-").lower()
-    definitions = dictionary.get_definitions(word_filtered)
+    definitions = dict.get_definitions(word_filtered)
     is_from_suggestions = False
 
     if len(definitions) == 0:
-        suggestions = dictionary.get_suggestions(word_filtered)
+        suggestions = dict.get_suggestions(word_filtered)
 
         spinner.fail(f"No definition found for: \033[1m{word}\033[0m")
         terminal_menu = TerminalMenu(suggestions, title="Did you mean?")
@@ -65,7 +66,7 @@ def cli(word: str, show_all: bool):
 
         if type(menu_entry_index) is int:
             suggested_word = suggestions[menu_entry_index]
-            definitions = dictionary.get_definitions(suggested_word)
+            definitions = dict.get_definitions(suggested_word)
             word_filtered = suggested_word
             is_from_suggestions = True
 
@@ -88,4 +89,4 @@ def cli(word: str, show_all: bool):
 
 
 if __name__ == "__main__":
-    cli()
+    main()

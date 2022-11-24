@@ -20,7 +20,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "cambd = cambd.main:cli",
+            "cambd = cambd.__main__:main",
         ]
     },
     packages=find_packages(),
