@@ -125,7 +125,6 @@ def handle_clear_cache(ctx, param, value):
 
 @click.command()
 @click.argument("word")
-@click.version_option(version=__version__, message="version %(version)s")
 @click.option(
     "-a",
     "--show-all",
@@ -142,6 +141,7 @@ def handle_clear_cache(ctx, param, value):
     is_eager=True,
     help="Clear all the stored cache from system.",
 )
+@click.version_option(version=__version__, message="version %(version)s")
 def main(word: str, show_all: bool):
     """Cambridge dictionary CLI app"""
 
