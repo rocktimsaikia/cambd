@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 ######################################################
 #
 # cambd - Cambridge dictionary cli app
@@ -143,8 +141,6 @@ def handle_clear_cache(ctx, param, value):
 )
 @click.version_option(version=__version__, message="version %(version)s")
 def main(word: str, show_all: bool):
-    """Cambridge dictionary CLI app"""
-
     cache_create()
 
     # Main

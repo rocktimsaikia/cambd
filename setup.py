@@ -10,6 +10,7 @@ setup(
     license="MIT",
     description="Cambridge dictionary cli app",
     long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
     install_requires=[
         "beautifulsoup4==4.11.1",
         "html5lib==1.1.0",
