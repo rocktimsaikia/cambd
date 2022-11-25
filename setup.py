@@ -1,8 +1,9 @@
 from setuptools import find_packages, setup
+import cambd
 
 setup(
     name="cambd",
-    version="0.0.1",
+    version=cambd.__version__,
     author="Rocktim Saikia",
     author_email="saikia.rocktim@proton.me",
     url="https://github.com/rocktimsaikia/cambd",
@@ -20,7 +21,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "cambd = cambd.__main__:main",
+            "cambd = cambd.cambd:main",
         ]
     },
     packages=find_packages(),
