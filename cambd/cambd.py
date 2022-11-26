@@ -80,7 +80,7 @@ def get_definitions(word: str, dictionary: str):
             word_type = word_type.get_text() if word_type is not None else None
 
             def_info = dcon.find(attrs={"class": "def-info"})
-            def_info = def_info.get_text() if def_info is not None else None
+            def_info = def_info.get_text().strip() if def_info is not None else None
             
             definition = dcon.find(attrs={"class": "ddef_d"}).get_text()
             example_containers = dcon.find_all(attrs={"class": "examp"})
