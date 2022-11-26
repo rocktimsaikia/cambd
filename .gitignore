@@ -1,1 +1,5 @@
 benchmark.txt
+cambd/__pycache__
+cambd.egg-info
+dist
+.pypirc
