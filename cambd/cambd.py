@@ -47,9 +47,9 @@ def decode_escaped_chars(strg):
 
 
 @spinner
-def get_definitions(word: str):
+def get_definitions(word: str, src: str):
     # Return cahced version if available
-    cached_word = is_cached(word)
+    cached_word = is_cached(src, word)
     if cached_word:
         return cached_word
 
@@ -66,44 +66,53 @@ def get_definitions(word: str):
 
     soup = BeautifulSoup(response.content, "html5lib")
     definitions = []
+    
+    containers = []
+    if src != "both":
+        containers = soup.find_all(attrs={"data-id": "cald4" if src == "uk" else "cacd"})
+    else:
+        containers = soup.find_all(attrs={"class": "dictionary"})
 
-    containers = soup.find_all(attrs={"class": "dsense"})
-    for div in containers:
-        word_type = div.find(attrs={"class": "dsense_pos"})
-        word_type = word_type.get_text() if word_type is not None else None
+    for container in containers:
+        dcons = container.find_all(attrs={"class": "dsense"})
+        src_title = container.find(attrs={"class": "region"}).get_text().upper()
 
-        def_info = div.find(attrs={"class": "def-info"})
-        def_info = def_info.get_text() if def_info is not None else None
-        
-        # no word_type means this definition is past/past-particle form of the word
-        # recurs with the original word
-        if word_type is None:
-            original_word = div.find(attrs={"class": "dx-h"}).get_text()
-            return get_definitions(original_word)
-        
-        definition = div.find(attrs={"class": "ddef_d"}).get_text()
-        example_containers = div.find_all(attrs={"class": "examp"})
-        examples = []
+        for dcon in dcons:
+            word_type = dcon.find(attrs={"class": "dsense_pos"})
+            word_type = word_type.get_text() if word_type is not None else None
 
-        for expl in example_containers:
-            example_text = expl.get_text().strip()
-            example_text = decode_escaped_chars(example_text)
-            examples.append(example_text)
+            def_info = dcon.find(attrs={"class": "def-info"})
+            def_info = def_info.get_text() if def_info is not None else None
+            
+            # no word_type means this definition is past/past-particle form of the word
+            # recurs with the original word
+            if word_type is None:
+                original_word = container.find(attrs={"class": "dx-h"}).get_text()
+                return get_definitions(original_word, src)
+            
+            definition = dcon.find(attrs={"class": "ddef_d"}).get_text()
+            example_containers = dcon.find_all(attrs={"class": "examp"})
+            examples = []
 
-        definition = definition.strip().capitalize()
-        definition = definition[:-1] if definition.endswith(":") else definition
-        definition = str(re.sub("[ \n]+", " ", definition)) + "."
+            for expl in example_containers:
+                example_text = expl.get_text().strip()
+                example_text = decode_escaped_chars(example_text)
+                examples.append(example_text)
 
-        if len(examples) > 2:
-            examples = examples[:2]
+            definition = definition.strip().capitalize()
+            definition = definition[:-1] if definition.endswith(":") else definition
+            definition = str(re.sub("[ \n]+", " ", definition)) + "."
 
-        definition_dict = {
-            "Definition": definition,
-            "Type": word_type,
-            "Info": def_info,
-            "Examples": examples,
-        }
-        definitions.append(definition_dict)
+            if len(examples) > 2:
+                examples = examples[:2]
+
+            definition_dict = {
+                "Definition": definition,
+                "Type": word_type,
+                "Info": src_title + " " + def_info,
+                "Examples": examples,
+            }
+            definitions.append(definition_dict)
 
     return definitions
 
@@ -135,6 +144,12 @@ def handle_clear_cache(ctx, param, value):
     help="Show all the definitions of a word.",
 )
 @click.option(
+    "-s",
+    "--src",
+    default="both", # us / uk / both
+    help="Show definitions for source.",
+)
+@click.option(
     "-c",
     "--clean-cache",
     is_flag=True,
@@ -144,12 +159,16 @@ def handle_clear_cache(ctx, param, value):
     help="Clear all the stored cache from system.",
 )
 @click.version_option(version=__version__, message="version %(version)s")
-def main(word: str, show_all: bool):
+def main(word: str, show_all: bool, src: str):
     cache_create()
+
+    if src not in ["uk", "us", "both"]:
+        spinner.warn("Source should be one of uk/us/both.")
+        return
 
     # Main
     word_filtered = word.strip().replace(" ", "-").lower()
-    definitions = get_definitions(word_filtered)
+    definitions = get_definitions(word_filtered, src)
     is_from_suggestions = False
 
     if len(definitions) == 0:
@@ -161,7 +180,7 @@ def main(word: str, show_all: bool):
 
         if type(menu_entry_index) is int:
             suggested_word = suggestions[menu_entry_index]
-            definitions = get_definitions(suggested_word)
+            definitions = get_definitions(suggested_word, src)
             word_filtered = suggested_word
             is_from_suggestions = True
 
@@ -180,4 +199,4 @@ def main(word: str, show_all: bool):
             is_last = (i + 1) == len(definitions)
             print_definition(word_filtered, definitions[i], is_last)
 
-    cache_append(word_filtered, definitions)
+    cache_append(src, word_filtered, definitions)
