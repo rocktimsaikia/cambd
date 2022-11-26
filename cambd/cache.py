@@ -9,20 +9,20 @@ con = sqlite3.connect(CACHED_DATABASE)
 
 def cache_create():
     sql_create_query = """ CREATE TABLE IF NOT EXISTS words (
-    src TEXT,
+    dictionary TEXT,
     word PRIMARY KEY,
     definitions TEXT
     ); """
     con.execute(sql_create_query)
 
-def is_cached(src: str, word: str):
-    cur = con.execute("SELECT definitions FROM words WHERE word = ? AND src = ?", (word,src))
+def is_cached(dictionary: str, word: str):
+    cur = con.execute("SELECT definitions FROM words WHERE word = ? AND dictionary = ?", (word,dictionary))
     row = cur.fetchone()
     return json.loads(row[0]) if row else None
 
 
-def cache_append(src: str, word: str, definitions):
-    row = src, word, json.dumps(definitions)
+def cache_append(dictionary: str, word: str, definitions):
+    row = dictionary, word, json.dumps(definitions)
     with con:
         con.execute("INSERT OR REPLACE INTO words VALUES (?, ?, ?)", row)
 
