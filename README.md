@@ -2,7 +2,7 @@
 
 > [Cambridge dictionary](https://dictionary.cambridge.org) cli app
 
-![cambd demo gif](demo.gif)
+<img src="https://www.dropbox.com/s/1jydlxwzmj8e6po/demo.gif?raw=1" alt="cambd, Cambridge dictionary cli app" />
 
 ## Features
 
@@ -33,20 +33,6 @@ Options:
 ```
 
 > By default it caches words in `$HOME/.cambd-cache.db`. To clear the cache if needed <br/> run `cambd --clear-cache`. It is strongly recommended to not modify this file manually.
-
-## TODO
-
-- [x] Add loading animation.
-- [x] Handle error for getting definition of words with spaces.
-- [x] Show only 2 examples per definition by default.
-- [x] Implement a persistent caching mechanism.
-- [x] Handle past/past-participle word definitions.
-- [x] Refactor redirection for better word lookup.
-- [x] Better/clean way to print the values in terminal.
-- [x] Move the bash port to python too.
-- [ ] Create a pypi package out of it.
-- [x] Add flag to show all definitions. Default is 1.
-- [ ] Show synonyms for the searched word too.
 
 ## LICENSE
 
