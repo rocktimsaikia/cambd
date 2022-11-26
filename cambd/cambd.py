@@ -67,17 +67,20 @@ def get_definitions(word: str):
     soup = BeautifulSoup(response.content, "html5lib")
     definitions = []
 
-    containers = soup.find_all(attrs={"class": "entry-body__el"})
+    containers = soup.find_all(attrs={"class": "dsense"})
     for div in containers:
-        word_type = div.find(attrs={"class": "dpos"})
+        word_type = div.find(attrs={"class": "dsense_pos"})
         word_type = word_type.get_text() if word_type is not None else None
 
+        def_info = div.find(attrs={"class": "def-info"})
+        def_info = def_info.get_text() if def_info is not None else None
+        
         # no word_type means this definition is past/past-particle form of the word
         # recurs with the original word
         if word_type is None:
             original_word = div.find(attrs={"class": "dx-h"}).get_text()
             return get_definitions(original_word)
-
+        
         definition = div.find(attrs={"class": "ddef_d"}).get_text()
         example_containers = div.find_all(attrs={"class": "examp"})
         examples = []
@@ -97,6 +100,7 @@ def get_definitions(word: str):
         definition_dict = {
             "Definition": definition,
             "Type": word_type,
+            "Info": def_info,
             "Examples": examples,
         }
         definitions.append(definition_dict)
@@ -105,7 +109,7 @@ def get_definitions(word: str):
 
 
 def print_definition(word, definition, is_last):
-    print(f"\n[bold green]{word}[/] [dim]({definition['Type']})[/]")
+    print(f"\n[bold green]{word}[/] [dim]({definition['Type']}) {definition['Info']}[/]")
     print(definition["Definition"])
     print("\n[dim]Examples:[/]")
     for example in definition["Examples"]:
