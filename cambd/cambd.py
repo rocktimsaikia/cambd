@@ -66,7 +66,7 @@ def get_definitions(word: str, dictionary: str):
 
     soup = BeautifulSoup(response.content, "html5lib")
     definitions = []
-    
+
     containers = soup.find_all(attrs={"data-id": "cald4" if dictionary == "uk" else "cacd"})
     for container in containers:
         dcons = container.find_all(attrs={"class": "dsense"})
@@ -74,6 +74,9 @@ def get_definitions(word: str, dictionary: str):
 
         for dcon in dcons:
             word_type = dcon.find(attrs={"class": "dsense_pos"})
+            # use parent's if local not defined
+            if word_type == None:
+                word_type = container.find(attrs={"class": "dpos"})
             word_type = word_type.get_text() if word_type is not None else None
 
             def_info = dcon.find(attrs={"class": "def-info"})
@@ -98,7 +101,8 @@ def get_definitions(word: str, dictionary: str):
             definition_dict = {
                 "Definition": definition,
                 "Type": word_type,
-                "Info": dictionary_title + " " + def_info,
+                "DictionaryTitle": dictionary_title,
+                "Info": def_info,
                 "Examples": examples,
             }
             definitions.append(definition_dict)
@@ -106,8 +110,10 @@ def get_definitions(word: str, dictionary: str):
     return definitions
 
 
-def print_definition(word, definition, is_last):
-    print(f"\n[bold green]{word}[/] [dim]({definition['Type']}) {definition['Info']}[/]")
+def print_definition(word, definition, is_last, verbose):
+    def_info = " " + definition['Info'] if verbose else ""
+    type_info = definition['Type'] if definition['Type'] is not None else "-"
+    print(f"\n[bold green]{word}[/] [dim]({type_info}) {definition['DictionaryTitle']}{def_info}[/]")
     print(definition["Definition"])
     print("\n[dim]Examples:[/]")
     for example in definition["Examples"]:
@@ -139,6 +145,13 @@ def handle_clear_cache(ctx, param, value):
     help="Show definitions for dictionary.",
 )
 @click.option(
+    "-v",
+    "--verbose",
+    default=False,
+    is_flag=True,
+    help="Show definition info.",
+)
+@click.option(
     "-c",
     "--clean-cache",
     is_flag=True,
@@ -148,7 +161,7 @@ def handle_clear_cache(ctx, param, value):
     help="Clear all the stored cache from system.",
 )
 @click.version_option(version=__version__, message="version %(version)s")
-def main(word: str, show_all: bool, dictionary: str):
+def main(word: str, show_all: bool, verbose: bool, dictionary: str):
     cache_create()
 
     if dictionary not in ["uk", "us"]:
@@ -182,10 +195,10 @@ def main(word: str, show_all: bool, dictionary: str):
         spinner.succeed(f"Showing definition of \033[1m{word_filtered}\033[0m instead")
 
     if not show_all:
-        print_definition(word_filtered, definitions[0], True)
+        print_definition(word_filtered, definitions[0], True, verbose)
     else:
         for i in range(len(definitions)):
             is_last = (i + 1) == len(definitions)
-            print_definition(word_filtered, definitions[i], is_last)
+            print_definition(word_filtered, definitions[i], is_last, verbose)
 
     cache_append(dictionary, word_filtered, definitions)
