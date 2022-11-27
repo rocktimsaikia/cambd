@@ -69,7 +69,7 @@ def get_definitions(word: str, dictionary: str):
 
     containers = soup.find_all(attrs={"data-id": "cald4" if dictionary == "uk" else "cacd"})
     for container in containers:
-        dcons = container.find_all(attrs={"class": "dsense"})
+        dcons = container.find_all(attrs={"class": "ddef_block"})
         dictionary_title = container.find(attrs={"class": "region"}).get_text().upper()
 
         for dcon in dcons:
