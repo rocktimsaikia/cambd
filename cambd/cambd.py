@@ -67,45 +67,56 @@ def get_definitions(word: str):
     soup = BeautifulSoup(response.content, "html5lib")
     definitions = []
 
-    containers = soup.find_all(attrs={"class": "entry-body__el"})
-    for div in containers:
-        word_type = div.find(attrs={"class": "dpos"})
-        word_type = word_type.get_text() if word_type is not None else None
+    dictionaries = soup.find_all(attrs={"class": "dictionary"})
+    for dictionary in dictionaries:
+        def_blocks = dictionary.find_all(attrs={"class": "ddef_block"})
+        dict_region = dictionary.find(attrs={"class": "region"}).get_text().upper()
 
-        # no word_type means this definition is past/past-particle form of the word
-        # recurs with the original word
-        if word_type is None:
-            original_word = div.find(attrs={"class": "dx-h"}).get_text()
-            return get_definitions(original_word)
+        for dblock in def_blocks:
+            word_type = dblock.find(attrs={"class": "dsense_pos"})
+            # use parent's if local not defined
+            if word_type == None:
+                word_type = dictionary.find(attrs={"class": "dpos"})
+            word_type = word_type.get_text() if word_type is not None else None
 
-        definition = div.find(attrs={"class": "ddef_d"}).get_text()
-        example_containers = div.find_all(attrs={"class": "examp"})
-        examples = []
+            # Info about word codes and lables (https://dictionary.cambridge.org/help/codes.html)
+            def_info = dblock.find(attrs={"class": "def-info"})
+            def_info = def_info.get_text().strip() if def_info is not None else None
 
-        for expl in example_containers:
-            example_text = expl.get_text().strip()
-            example_text = decode_escaped_chars(example_text)
-            examples.append(example_text)
+            definition = dblock.find(attrs={"class": "ddef_d"}).get_text()
+            example_containers = dblock.find_all(attrs={"class": "examp"})
+            examples = []
 
-        definition = definition.strip().capitalize()
-        definition = definition[:-1] if definition.endswith(":") else definition
-        definition = str(re.sub("[ \n]+", " ", definition)) + "."
+            for expl in example_containers:
+                example_text = expl.get_text().strip()
+                example_text = decode_escaped_chars(example_text)
+                examples.append(example_text)
 
-        if len(examples) > 2:
-            examples = examples[:2]
+            definition = definition.strip().capitalize()
+            definition = definition[:-1] if definition.endswith(":") else definition
+            definition = str(re.sub("[ \n]+", " ", definition)) + "."
 
-        definition_dict = {
-            "Definition": definition,
-            "Type": word_type,
-            "Examples": examples,
-        }
-        definitions.append(definition_dict)
+            if len(examples) > 2:
+                examples = examples[:2]
+
+            definition_dict = {
+                "Definition": definition,
+                "Type": word_type,
+                "DictionaryRegion": dict_region,
+                "Info": def_info,
+                "Examples": examples,
+            }
+            definitions.append(definition_dict)
 
     return definitions
 
 
-def print_definition(word, definition, is_last):
-    print(f"\n[bold green]{word}[/] [dim]({definition['Type']})[/]")
+def print_definition(word, definition, is_last, verbose):
+    def_info = " " + definition["Info"] if verbose else ""
+    type_info = definition["Type"] if definition["Type"] is not None else "-"
+    print(
+        f"\n[bold green]{word}[/] [dim]({type_info}) {definition['DictionaryRegion']}{def_info}[/]"
+    )
     print(definition["Definition"])
     print("\n[dim]Examples:[/]")
     for example in definition["Examples"]:
@@ -131,8 +142,22 @@ def handle_clear_cache(ctx, param, value):
     help="Show all the definitions of a word.",
 )
 @click.option(
+    "-d",
+    "--dictionary",
+    default="uk",
+    show_default=True,
+    help="Determine which dictionary region to use (uk, us)",
+)
+@click.option(
+    "-v",
+    "--verbose",
+    default=False,
+    is_flag=True,
+    help="Show extra word info ie, word codes & labels. [ex: A2 informal]",
+)
+@click.option(
     "-c",
-    "--clean-cache",
+    "--clear-cache",
     is_flag=True,
     callback=handle_clear_cache,
     expose_value=False,
@@ -140,8 +165,12 @@ def handle_clear_cache(ctx, param, value):
     help="Clear all the stored cache from system.",
 )
 @click.version_option(version=__version__, message="version %(version)s")
-def main(word: str, show_all: bool):
+def main(word: str, show_all: bool, verbose: bool, dictionary: str):
     cache_create()
+
+    if dictionary not in ["uk", "us"]:
+        spinner.warn("Not a valid dictionary region. Available regions are uk, us.")
+        return
 
     # Main
     word_filtered = word.strip().replace(" ", "-").lower()
@@ -169,11 +198,17 @@ def main(word: str, show_all: bool):
     if is_from_suggestions:
         spinner.succeed(f"Showing definition of \033[1m{word_filtered}\033[0m instead")
 
+    wanted_definitions = list(
+        filter(
+            lambda want: want["DictionaryRegion"].lower() == dictionary.lower(),
+            definitions,
+        )
+    )
     if not show_all:
-        print_definition(word_filtered, definitions[0], True)
+        print_definition(word_filtered, wanted_definitions[0], True, verbose)
     else:
-        for i in range(len(definitions)):
-            is_last = (i + 1) == len(definitions)
-            print_definition(word_filtered, definitions[i], is_last)
+        for i in range(len(wanted_definitions)):
+            is_last = (i + 1) == len(wanted_definitions)
+            print_definition(word_filtered, wanted_definitions[i], is_last, verbose)
 
     cache_append(word_filtered, definitions)
