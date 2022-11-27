@@ -47,9 +47,9 @@ def decode_escaped_chars(strg):
 
 
 @spinner
-def get_definitions(word: str, dictionary: str):
+def get_definitions(word: str):
     # Return cahced version if available
-    cached_word = is_cached(dictionary, word)
+    cached_word = is_cached(word)
     if cached_word:
         return cached_word
 
@@ -67,16 +67,16 @@ def get_definitions(word: str, dictionary: str):
     soup = BeautifulSoup(response.content, "html5lib")
     definitions = []
 
-    containers = soup.find_all(attrs={"data-id": "cald4" if dictionary == "uk" else "cacd"})
-    for container in containers:
-        dcons = container.find_all(attrs={"class": "ddef_block"})
-        dictionary_title = container.find(attrs={"class": "region"}).get_text().upper()
+    dictionaries = soup.find_all(attrs={"class": "dictionary"})
+    for dictionary in dictionaries:
+        dcons = dictionary.find_all(attrs={"class": "ddef_block"})
+        dictionary_title = dictionary.find(attrs={"class": "region"}).get_text().upper()
 
         for dcon in dcons:
             word_type = dcon.find(attrs={"class": "dsense_pos"})
             # use parent's if local not defined
             if word_type == None:
-                word_type = container.find(attrs={"class": "dpos"})
+                word_type = dictionary.find(attrs={"class": "dpos"})
             word_type = word_type.get_text() if word_type is not None else None
 
             def_info = dcon.find(attrs={"class": "def-info"})
@@ -170,7 +170,7 @@ def main(word: str, show_all: bool, verbose: bool, dictionary: str):
 
     # Main
     word_filtered = word.strip().replace(" ", "-").lower()
-    definitions = get_definitions(word_filtered, dictionary)
+    definitions = get_definitions(word_filtered)
     is_from_suggestions = False
 
     if len(definitions) == 0:
@@ -182,7 +182,7 @@ def main(word: str, show_all: bool, verbose: bool, dictionary: str):
 
         if type(menu_entry_index) is int:
             suggested_word = suggestions[menu_entry_index]
-            definitions = get_definitions(suggested_word, dictionary)
+            definitions = get_definitions(suggested_word)
             word_filtered = suggested_word
             is_from_suggestions = True
 
@@ -194,11 +194,12 @@ def main(word: str, show_all: bool, verbose: bool, dictionary: str):
     if is_from_suggestions:
         spinner.succeed(f"Showing definition of \033[1m{word_filtered}\033[0m instead")
 
+    wanted_definitions = list(filter(lambda want: want['DictionaryTitle'].lower() == dictionary.lower(), definitions))
     if not show_all:
-        print_definition(word_filtered, definitions[0], True, verbose)
+        print_definition(word_filtered, wanted_definitions[0], True, verbose)
     else:
-        for i in range(len(definitions)):
-            is_last = (i + 1) == len(definitions)
-            print_definition(word_filtered, definitions[i], is_last, verbose)
+        for i in range(len(wanted_definitions)):
+            is_last = (i + 1) == len(wanted_definitions)
+            print_definition(word_filtered, wanted_definitions[i], is_last, verbose)
 
-    cache_append(dictionary, word_filtered, definitions)
+    cache_append(word_filtered, definitions)
