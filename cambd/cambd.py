@@ -83,30 +83,32 @@ def get_definitions(word: str):
             def_info = dblock.find(attrs={"class": "def-info"})
             def_info = def_info.get_text().strip() if def_info is not None else None
 
-            definition = dblock.find(attrs={"class": "ddef_d"}).get_text()
-            example_containers = dblock.find_all(attrs={"class": "examp"})
-            examples = []
+            definition = dblock.find(attrs={"class": "ddef_d"})
+            if definition:
+                definition = dblock.find(attrs={"class": "ddef_d"}).get_text()
+                example_containers = dblock.find_all(attrs={"class": "examp"})
+                examples = []
 
-            for expl in example_containers:
-                example_text = expl.get_text().strip()
-                example_text = decode_escaped_chars(example_text)
-                examples.append(example_text)
+                for expl in example_containers:
+                    example_text = expl.get_text().strip()
+                    example_text = decode_escaped_chars(example_text)
+                    examples.append(example_text)
 
-            definition = definition.strip().capitalize()
-            definition = definition[:-1] if definition.endswith(":") else definition
-            definition = str(re.sub("[ \n]+", " ", definition)) + "."
+                definition = definition.strip().capitalize()
+                definition = definition[:-1] if definition.endswith(":") else definition
+                definition = str(re.sub("[ \n]+", " ", definition)) + "."
 
-            if len(examples) > 2:
-                examples = examples[:2]
+                if len(examples) > 2:
+                    examples = examples[:2]
 
-            definition_dict = {
-                "Definition": definition,
-                "Type": word_type,
-                "DictionaryRegion": dict_region,
-                "Info": def_info,
-                "Examples": examples,
-            }
-            definitions.append(definition_dict)
+                definition_dict = {
+                    "Definition": definition,
+                    "Type": word_type,
+                    "DictionaryRegion": dict_region,
+                    "Info": def_info,
+                    "Examples": examples,
+                }
+                definitions.append(definition_dict)
 
     return definitions
 
