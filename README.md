@@ -26,10 +26,12 @@ pip install cambd
 Usage: cambd [OPTIONS] WORD
 
 Options:
-  -a, --show-all     Show all the definitions of a word.
-  -c, --clean-cache  Clear all the stored cache from system.
-  --version          Show the version and exit.
-  --help             Show this message and exit.
+  -a, --show-all         Show all the definitions of a word.
+  -d, --dictionary TEXT  Determine which dictionary region to use (uk, us) [default: uk]
+  -v, --verbose          Show extra word info ie, word codes & labels. [ex: A2 informal]
+  -c, --clear-cache      Clear all the stored cache from system.
+  --version              Show the version and exit.
+  --help                 Show this message and exit.
 ```
 
 > By default it caches words in `$HOME/.cambd-cache.db`. To clear the cache if needed <br/> run `cambd --clear-cache`. It is strongly recommended to not modify this file manually.

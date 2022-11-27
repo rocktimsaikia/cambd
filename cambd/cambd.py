@@ -69,21 +69,22 @@ def get_definitions(word: str):
 
     dictionaries = soup.find_all(attrs={"class": "dictionary"})
     for dictionary in dictionaries:
-        dcons = dictionary.find_all(attrs={"class": "ddef_block"})
-        dictionary_title = dictionary.find(attrs={"class": "region"}).get_text().upper()
+        def_blocks = dictionary.find_all(attrs={"class": "ddef_block"})
+        dict_region = dictionary.find(attrs={"class": "region"}).get_text().upper()
 
-        for dcon in dcons:
-            word_type = dcon.find(attrs={"class": "dsense_pos"})
+        for dblock in def_blocks:
+            word_type = dblock.find(attrs={"class": "dsense_pos"})
             # use parent's if local not defined
             if word_type == None:
                 word_type = dictionary.find(attrs={"class": "dpos"})
             word_type = word_type.get_text() if word_type is not None else None
 
-            def_info = dcon.find(attrs={"class": "def-info"})
+            # Info about word codes and lables (https://dictionary.cambridge.org/help/codes.html)
+            def_info = dblock.find(attrs={"class": "def-info"})
             def_info = def_info.get_text().strip() if def_info is not None else None
-            
-            definition = dcon.find(attrs={"class": "ddef_d"}).get_text()
-            example_containers = dcon.find_all(attrs={"class": "examp"})
+
+            definition = dblock.find(attrs={"class": "ddef_d"}).get_text()
+            example_containers = dblock.find_all(attrs={"class": "examp"})
             examples = []
 
             for expl in example_containers:
@@ -101,7 +102,7 @@ def get_definitions(word: str):
             definition_dict = {
                 "Definition": definition,
                 "Type": word_type,
-                "DictionaryTitle": dictionary_title,
+                "DictionaryRegion": dict_region,
                 "Info": def_info,
                 "Examples": examples,
             }
@@ -111,9 +112,11 @@ def get_definitions(word: str):
 
 
 def print_definition(word, definition, is_last, verbose):
-    def_info = " " + definition['Info'] if verbose else ""
-    type_info = definition['Type'] if definition['Type'] is not None else "-"
-    print(f"\n[bold green]{word}[/] [dim]({type_info}) {definition['DictionaryTitle']}{def_info}[/]")
+    def_info = " " + definition["Info"] if verbose else ""
+    type_info = definition["Type"] if definition["Type"] is not None else "-"
+    print(
+        f"\n[bold green]{word}[/] [dim]({type_info}) {definition['DictionaryRegion']}{def_info}[/]"
+    )
     print(definition["Definition"])
     print("\n[dim]Examples:[/]")
     for example in definition["Examples"]:
@@ -142,18 +145,19 @@ def handle_clear_cache(ctx, param, value):
     "-d",
     "--dictionary",
     default="uk",
-    help="Show definitions for dictionary.",
+    show_default=True,
+    help="Determine which dictionary region to use (uk, us)",
 )
 @click.option(
     "-v",
     "--verbose",
     default=False,
     is_flag=True,
-    help="Show definition info.",
+    help="Show extra word info ie, word codes & labels. [ex: A2 informal]",
 )
 @click.option(
     "-c",
-    "--clean-cache",
+    "--clear-cache",
     is_flag=True,
     callback=handle_clear_cache,
     expose_value=False,
@@ -165,7 +169,7 @@ def main(word: str, show_all: bool, verbose: bool, dictionary: str):
     cache_create()
 
     if dictionary not in ["uk", "us"]:
-        spinner.warn("Dictionary should be uk or us.")
+        spinner.warn("Not a valid dictionary region. Available regions are uk, us.")
         return
 
     # Main
@@ -194,7 +198,12 @@ def main(word: str, show_all: bool, verbose: bool, dictionary: str):
     if is_from_suggestions:
         spinner.succeed(f"Showing definition of \033[1m{word_filtered}\033[0m instead")
 
-    wanted_definitions = list(filter(lambda want: want['DictionaryTitle'].lower() == dictionary.lower(), definitions))
+    wanted_definitions = list(
+        filter(
+            lambda want: want["DictionaryRegion"].lower() == dictionary.lower(),
+            definitions,
+        )
+    )
     if not show_all:
         print_definition(word_filtered, wanted_definitions[0], True, verbose)
     else:
