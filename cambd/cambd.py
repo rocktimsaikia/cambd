@@ -206,12 +206,15 @@ def main(word: str, show_all: bool, verbose: bool, dictionary: str):
             definitions,
         )
     )
+
+    # If no definition found in the selected dictionary, grab from all
     if len(wanted_definitions) == 0:
-        spinner.warn(f"No word found in the {dictionary} dictionary."
-                      " Grabbing from all.")
+        spinner.warn(
+            f"No word found in the {dictionary} dictionary." " Grabbing from all."
+        )
         wanted_definitions = list(
             filter(
-                lambda want: want["DictionaryRegion"].lower() in ['us', 'uk'],
+                lambda want: want["DictionaryRegion"].lower() in ["us", "uk"],
                 definitions,
             )
         )
