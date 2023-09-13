@@ -3,3 +3,4 @@ cambd/__pycache__
 cambd.egg-info
 dist
 .pypirc
+cambd-env
