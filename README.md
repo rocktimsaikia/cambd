@@ -37,9 +37,10 @@ Options:
 > By default it caches words in `$HOME/.cambd-cache.db`. To clear the cache if needed <br/> run `cambd --clear-cache`. It is strongly recommended to not modify this file manually.
 
 ## FAQ
+
 1. Why scrape instead of using a Dictionary API?
-> TBH, As a non native english speaker, I find the cambridge dictionary the most easy to understand. But they don't have any public free API with all the features I want like getting suggestions on misspelled words and give both US and UK definations etc. So I ended up building this cli tool with basic scrapping for my own usecase as I am a terminal power user and don't want to leave the terminal, go to browser, open a new tab just to search for a word meaning.
+   > TBH, As a non native english speaker, I find the cambridge dictionary the most easy to understand. But they don't have any public free API with all the features I want like getting suggestions on misspelled words and give both US and UK definations etc. So I ended up building this cli tool with basic scrapping for my own usecase as I am a terminal power user and don't want to leave the terminal, go to browser, open a new tab just to search for a word meaning.
 
 ## LICENSE
 
-[MIT](./LICENSE) License &copy; [Rocktim Saikia](https://rocktimsaikia.com) 2022
+[MIT](./LICENSE) License &copy; [Rocktim Saikia](https://rocktimsaikia.dev) 2024
