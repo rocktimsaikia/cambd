@@ -3,6 +3,9 @@
 We are happy to accept contributions from anyone, whether you are a first-time contributor or a seasoned veteran.
 This guide is designed to help you get started contributing to the project.
 
+> [!NOTE]
+> We are not accepting PRs for granular changes like typos in README file or updating any text content. PRs have to be fixing some sort of issues or adding a new feature.
+
 ### Local Development
 
 ```bash
@@ -13,14 +16,14 @@ git clone https://github.com/rocktimsaikia/cambd.git
 git checkout -b name-of-your-bugfix-or-feature
 
 # 3. Create a virtual environment.
-python -m venv cambd-env
+python -m venv cambd-venv
 
 # 4. Activate the virtual environment.
 # On Windows, run:
-cambd-env\Scripts\activate
+cambd-venv\Scripts\activate
 
 # On Unix or MacOS, run:
-source cambd-env/bin/activate
+source cambd-venv/bin/activate
 
 # 5. Install the dependencies.
 pip install -r requirements.txt

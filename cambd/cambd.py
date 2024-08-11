@@ -1,21 +1,21 @@
 ######################################################
 #
 # cambd - Cambridge dictionary cli app
-# written by Rocktim Saikia (saikia.rocktim@proton.me)
+# written by Rocktim Saikia (hey@rocktimsaikia.dev)
 #
 ######################################################
 
 import re
+
 import click
 import requests
-from halo import Halo
+from bs4 import BeautifulSoup
 from halo import Halo
 from rich import print
-from halo import Halo
-from bs4 import BeautifulSoup
 from simple_term_menu import TerminalMenu
-from .cache import cache_create, cache_clear, cache_append, is_cached
+
 from .__init__ import __version__
+from .cache import cache_append, cache_clear, cache_create, is_cached
 
 spinner = Halo(text="Loading", spinner="dots")
 
