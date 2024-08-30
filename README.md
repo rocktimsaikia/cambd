@@ -1,6 +1,6 @@
 # Cambd
 
-> [Cambridge dictionary](https://dictionary.cambridge.org) cli app
+[Cambridge dictionary](https://dictionary.cambridge.org) cli app
 
 <img src="https://www.dropbox.com/s/1jydlxwzmj8e6po/demo.gif?raw=1" alt="cambd, Cambridge dictionary cli app" />
 
@@ -16,6 +16,12 @@
 
 ```sh
 pip install cambd
+```
+
+Or using [pipx](https://pipx.pypa.io/stable/)
+
+```sh
+pipx install cambd
 ```
 
 ## Usage

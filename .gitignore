@@ -6,3 +6,4 @@ dist
 venv/
 .env/
 *-venv/
+build
