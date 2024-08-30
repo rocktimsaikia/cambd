@@ -4,6 +4,7 @@ import sqlite3
 
 # Don't alter this. Unless you want to deal with permission issues in other places
 CACHED_DATABASE = os.path.expanduser("~") + "/.cache/cambd/dictionary.db"
+os.makedirs(os.path.dirname(CACHED_DATABASE), exist_ok=True)
 con = sqlite3.connect(CACHED_DATABASE)
 
 
