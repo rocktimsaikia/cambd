@@ -3,7 +3,7 @@ import os
 import sqlite3
 
 # Don't alter this. Unless you want to deal with permission issues in other places
-CACHED_DATABASE = os.path.expanduser("~") + "/.cambd-cache.db"
+CACHED_DATABASE = os.path.expanduser("~") + "/.cache/cambd/dictionary.db"
 con = sqlite3.connect(CACHED_DATABASE)
 
 

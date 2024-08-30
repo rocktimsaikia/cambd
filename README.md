@@ -1,4 +1,4 @@
-# cambd
+# Cambd
 
 > [Cambridge dictionary](https://dictionary.cambridge.org) cli app
 
@@ -6,15 +6,13 @@
 
 ## Features
 
-- Autosuggest related words on typo.
-- Interactive suggestion menu to select words from in the above case.
-- Handles past and past-particle words. Returns the original word definition.
-- No API/database involved.
-- A Persistent caching mechanism. This avoids looking up already searched words; hence fast results.
+- Automatically suggests related words when a typo is detected.
+- Provides an interactive suggestion menu for selecting the correct word in case of a typo.
+- Supports past and past participle forms, returning the definition of the root word.
+- Operates without relying on any external APIs or databases.
+- Implements persistent caching to store previously searched words, ensuring faster results. The cache is maintained using Python's built-in `sqlite3`.
 
-> Uses python's integrated `sqlite3` for maintaning a persistent cache.
-
-## Installation
+## Install
 
 ```sh
 pip install cambd
@@ -34,12 +32,12 @@ Options:
   --help                 Show this message and exit.
 ```
 
-> By default it caches words in `$HOME/.cambd-cache.db`. To clear the cache if needed <br/> run `cambd --clear-cache`. It is strongly recommended to not modify this file manually.
-
 ## FAQ
 
-1. Why scrape instead of using a Dictionary API?
-   > TBH, As a non native english speaker, I find the cambridge dictionary the most easy to understand. But they don't have any public free API with all the features I want like getting suggestions on misspelled words and give both US and UK definations etc. So I ended up building this cli tool with basic scrapping for my own usecase as I am a terminal power user and don't want to leave the terminal, go to browser, open a new tab just to search for a word meaning.
+Q. Why scrape instead of using a Dictionary API?
+
+> [!NOTE]
+> TBH, As a non native english speaker, I find the cambridge dictionary the most easy to understand. But they don't have any public free API with all the features I want like getting suggestions on misspelled words and give both US and UK definations etc. So I ended up building this cli tool with basic scrapping for my own usecase as I am a terminal power user and don't want to leave the terminal, go to browser, open a new tab just to search for a word meaning.
 
 ## LICENSE
 
