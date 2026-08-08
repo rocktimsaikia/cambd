@@ -1,10 +1,7 @@
-BIN_DEST = /usr/bin/cambd
+.PHONY: install uninstall
 
 install:
-	cp -f cambd-cli/cambd.py $(BIN_DEST)
-	chmod +x $(BIN_DEST)
-	@echo "Install successful."
+	pip install .
 
 uninstall:
-	rm -f $(BIN_DEST)
-	@echo "Uninstall successful."
+	pip uninstall -y cambd
