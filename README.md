@@ -2,6 +2,9 @@
 
 [Cambridge dictionary](https://dictionary.cambridge.org) cli app
 
+> [!WARNING]
+> **cambd is currently not working.** `dictionary.cambridge.org` is now behind a Cloudflare bot challenge and returns `403` to plain HTTP requests, so every lookup fails with "No definition found". This affects the whole site, not just one endpoint, and it is not fixable by changing the request headers or User-Agent - clearing the challenge requires running its JavaScript. A fix means moving to a headless browser or a different data source; no decision made yet. Tracking this before spending time on a PR.
+
 <img src="https://www.dropbox.com/s/1jydlxwzmj8e6po/demo.gif?raw=1" alt="cambd, Cambridge dictionary cli app" />
 
 ## Features
