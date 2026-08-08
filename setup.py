@@ -1,10 +1,13 @@
+import re
+
 from setuptools import find_packages, setup
 
-import cambd
+# Read instead of import: the package isn't on sys.path during an isolated PEP 517 build
+version = re.findall(r'__version__ = "(.+)"', open("cambd/__init__.py").read())[0]
 
 setup(
     name="cambd",
-    version=cambd.__version__,
+    version=version,
     author="Rocktim Saikia",
     author_email="saikia.rocktim@proton.me",
     url="https://github.com/rocktimsaikia/cambd",
