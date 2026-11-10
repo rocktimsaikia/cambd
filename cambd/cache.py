@@ -19,7 +19,14 @@ def cache_create():
 def is_cached(word: str):
     cur = con.execute("SELECT definitions FROM words WHERE word = ?", (word,))
     row = cur.fetchone()
-    return json.loads(row[0]) if row else None
+    if not row:
+        return None
+    try:
+        return json.loads(row[0])
+    except (ValueError, TypeError):
+        # A corrupt cache entry must not crash the lookup; fall through
+        # and fetch the definitions fresh from the dictionary.
+        return None
 
 
 def cache_append(word: str, definitions):
